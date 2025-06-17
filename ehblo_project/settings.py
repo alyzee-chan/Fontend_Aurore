@@ -20,7 +20,7 @@ SECRET_KEY = os.getenv('DJANGO_SECRET_KEY', 'default-insecure-key-for-dev-only')
 DEBUG = os.getenv('DJANGO_DEBUG', 'True') == 'True' # Controlled by environment variable
 
 # RESOLVED MERGE CONFLICT BELOW THIS LINE
-ALLOWED_HOSTS = ['127.0.0.1', 'localhost', '0aee-41-202-207-5.ngrok-free.app', 'ehblo.onrender.com','https://fontend-aurore.onrender.com']
+ALLOWED_HOSTS = ['127.0.0.1', 'localhost', '0aee-41-202-207-5.ngrok-free.app', 'ehblo.onrender.com','fontend-aurore.onrender.com']
 
 CSRF_TRUSTED_ORIGINS = ['https://0aee-41-202-207-5.ngrok-free.app', 'https://ehblo.onrender.com','https://fontend-aurore.onrender.com']
 # RESOLVED MERGE CONFLICT ABOVE THIS LINE
