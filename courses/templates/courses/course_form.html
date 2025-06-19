@@ -3,72 +3,345 @@
 
 {% block title %}{% if course %}Edit Course{% else %}Create New Course{% endif %}{% endblock %}
 
+{% block extra_css %}
+<style>
+    body {
+        background: linear-gradient(135deg, #f3e8ff 0%, #e9d5ff 100%);
+        min-height: 100vh;
+    }
+
+    .step-content {
+        display: none;
+    }
+
+    .step-content.active {
+        display: block;
+        animation: fadeIn 0.5s ease-out forwards;
+    }
+
+    @keyframes fadeIn {
+        from { opacity: 0; transform: translateY(10px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
+
+    .border-red-500 {
+        border-color: #ef4444 !important;
+    }
+
+    .error-message {
+        color: #ef4444;
+        font-size: 0.75rem;
+        margin-top: 0.25rem;
+        animation: shake 0.3s ease-in-out;
+    }
+
+    @keyframes shake {
+        0%, 100% { transform: translateX(0); }
+        20%, 60% { transform: translateX(-5px); }
+        40%, 80% { transform: translateX(5px); }
+    }
+
+    #image-upload-container:hover {
+        border-color: #9333ea;
+    }
+
+    #preview-image {
+        max-height: 200px;
+        object-fit: cover;
+    }
+</style>
+{% endblock %}
+
 {% block content %}
-<div class="max-w-2xl mx-auto bg-white p-8 rounded-lg shadow-md mt-10">
-    {# Changed text-blue-600 to text-purple-600 #}
-    <h2 class="text-3xl font-bold text-center text-purple-600 mb-6">
-        {% if course %}Edit Course: {{ course.title }}{% else %}Create New Course{% endif %}
-    </h2>
-    {# The enctype="multipart/form-data" is already correctly set, which is crucial for file uploads. #}
-    <form method="post" enctype="multipart/form-data" class="space-y-4">
-        {% csrf_token %}
+<div class="max-w-4xl mx-auto p-4">
+    <!-- Progress Steps -->
+    <div class="flex justify-between mb-8 relative px-4 sm:px-8">
+        <div class="absolute top-1/2 left-12 right-12 h-1 bg-gray-200 -z-10">
+            <div id="progress-bar" class="h-full bg-purple-600 transition-all duration-500" style="width: 0%"></div>
+        </div>
 
-        {# --- NEW: Display current image if editing an existing course --- #}
-        {% if course and course.image %}
-            <div class="mb-6">
-                <label class="block text-gray-700 text-sm font-bold mb-2">Current Image:</label>
-                <img src="{{ course.image.url }}" alt="{{ course.title }}" class="w-48 h-auto object-cover rounded-lg shadow-sm border border-gray-200">
+        <!-- Steps 1-4 -->
+        {% for step in "1234" %}
+        <div class="flex flex-col items-center relative group">
+            <div class="w-10 h-10 rounded-full bg-gray-200 flex items-center justify-center text-gray-600 font-bold shadow-md transform transition-all duration-300 group-hover:scale-110 cursor-pointer step-circle"
+                 data-step="{{ step }}"
+                 id="step-circle-{{ step }}">
+                {% if step == "1" %}<span class="material-symbols-outlined text-lg">info</span>
+                {% elif step == "2" %}<span class="material-symbols-outlined text-lg">article</span>
+                {% elif step == "3" %}<span class="material-symbols-outlined text-lg">tune</span>
+                {% else %}<span class="material-symbols-outlined text-lg">visibility</span>{% endif %}
             </div>
-        {% endif %}
-        {# --- END NEW SECTION --- #}
-
-        {# Manual form rendering starts here #}
-        {% for field in form %}
-            <div class="mb-4">
-                {# Display label #}
-                <label for="{{ field.id_for_label }}" class="block text-gray-700 text-sm font-bold mb-2">
-                    {{ field.label }}
-                    {% if field.field.required %}
-                        <span class="text-red-500">*</span>
-                    {% endif %}
-                </label>
-
-                {# Display the input field. Tailwind classes are applied in forms.py #}
-                {# Special handling for checkbox for better visual alignment #}
-                {% if field.field.widget.input_type == 'checkbox' %}
-                    <div class="flex items-center">
-                        {{ field }}
-                        <span class="ml-2 text-gray-700">{{ field.label }}</span> {# Label for checkbox #}
-                    </div>
-                {% else %}
-                    {{ field }}
-                {% endif %}
-
-                {# Display field errors #}
-                {% if field.errors %}
-                    <ul class="text-red-600 text-xs mt-1">
-                        {% for error in field.errors %}
-                            <li>{{ error }}</li>
-                        {% endfor %}
-                    </ul>
-                {% endif %}
-
-                {# Display help text #}
-                {% if field.help_text %}
-                    <p class="text-gray-600 text-xs italic mt-1">{{ field.help_text }}</p>
-                {% endif %}
+            <div class="absolute -bottom-6 text-xs font-medium text-gray-500 step-label" id="step-label-{{ step }}">
+                {% if step == "1" %}Informations
+                {% elif step == "2" %}Contenu
+                {% elif step == "3" %}Réglages
+                {% else %}Aperçu{% endif %}
             </div>
+        </div>
         {% endfor %}
-        {# Manual form rendering ends here #}
+    </div>
 
-        {# Changed bg-blue-600 to bg-purple-600 and hover:bg-blue-700 to hover:bg-purple-700 #}
-        <button type="submit" class="w-full bg-purple-600 text-white p-3 rounded-lg font-semibold hover:bg-purple-700 transition duration-300">
-            {% if course %}Update Course{% else %}Create Course{% endif %}
-        </button>
-    </form>
-    <div class="text-center mt-4">
-        {# Changed text-blue-600 to text-purple-600 #}
-        <a href="{% url 'instructor_dashboard' %}" class="text-purple-600 hover:underline">Back to Dashboard</a>
+    <!-- Form Container -->
+    <div class="bg-white p-6 rounded-xl shadow-lg border border-purple-200">
+        <h2 class="text-2xl font-bold text-center text-purple-700 mb-6">
+            {% if course %}Modifier le cours{% else %}Créer un nouveau cours{% endif %}
+        </h2>
+
+        <form id="course-form" method="post" enctype="multipart/form-data" class="space-y-4">
+            {% csrf_token %}
+
+            <!-- Step 1: Basic Info -->
+            <div id="step-1" class="step-content active">
+                {% if course and course.image %}
+                <div class="mb-4">
+                    <label class="block text-gray-700 text-sm font-bold mb-2">Image actuelle :</label>
+                    <img src="{{ course.image.url }}" alt="{{ course.title }}" class="w-48 h-auto object-cover rounded-lg shadow-sm border border-gray-200">
+                </div>
+                {% endif %}
+
+                <div class="mb-4">
+                    <label class="block text-gray-700 text-sm font-bold mb-2" for="{{ form.title.id_for_label }}">Titre du cours <span class="text-red-500">*</span></label>
+                    {{ form.title }}
+                    {% if form.title.errors %}
+                        <p class="error-message">{{ form.title.errors.0 }}</p>
+                    {% endif %}
+                </div>
+
+                <div class="mb-4">
+                    <label class="block text-gray-700 text-sm font-bold mb-2" for="{{ form.short_description.id_for_label }}">Description courte <span class="text-red-500">*</span></label>
+                    {{ form.short_description }}
+                    {% if form.short_description.errors %}
+                        <p class="error-message">{{ form.short_description.errors.0 }}</p>
+                    {% endif %}
+                </div>
+
+                <div class="mb-4">
+                    <label class="block text-gray-700 text-sm font-bold mb-2" for="{{ form.image.id_for_label }}">Image du cours</label>
+                    <div id="image-upload-container" class="relative border-2 border-dashed border-purple-300 rounded-lg p-4 text-center transition">
+                        {{ form.image }}
+                        <div class="pointer-events-none absolute inset-0 flex flex-col items-center justify-center">
+                            <span class="material-symbols-outlined text-purple-500 text-4xl mb-2">image</span>
+                            <p class="text-sm text-purple-600">Glissez-déposez ou cliquez pour sélectionner</p>
+                        </div>
+                    </div>
+                    {% if form.image.errors %}
+                        <p class="error-message">{{ form.image.errors.0 }}</p>
+                    {% endif %}
+                </div>
+            </div>
+
+            <!-- Step 2: Content -->
+            <div id="step-2" class="step-content">
+                <div class="mb-4">
+                    <label class="block text-gray-700 text-sm font-bold mb-2" for="{{ form.description.id_for_label }}">Description complète <span class="text-red-500">*</span></label>
+                    {{ form.description }}
+                    {% if form.description.errors %}
+                        <p class="error-message">{{ form.description.errors.0 }}</p>
+                    {% endif %}
+                </div>
+            </div>
+
+            <!-- Step 3: Settings -->
+            <div id="step-3" class="step-content">
+                <div class="mb-4">
+                    <label class="block text-gray-700 text-sm font-bold mb-2" for="{{ form.category.id_for_label }}">Catégorie <span class="text-red-500">*</span></label>
+                    {{ form.category }}
+                    {% if form.category.errors %}
+                        <p class="error-message">{{ form.category.errors.0 }}</p>
+                    {% endif %}
+                </div>
+                <div class="mb-4">
+                    <label class="block text-gray-700 text-sm font-bold mb-2" for="{{ form.price.id_for_label }}">Prix (FCFA) <span class="text-red-500">*</span></label>
+                    {{ form.price }}
+                    {% if form.price.errors %}
+                        <p class="error-message">{{ form.price.errors.0 }}</p>
+                    {% endif %}
+                </div>
+                <div class="mb-4 flex items-center">
+                    {{ form.is_published }}
+                    <label class="ml-2 text-gray-700 text-sm font-bold" for="{{ form.is_published.id_for_label }}">Publier le cours</label>
+                </div>
+            </div>
+
+            <!-- Step 4: Preview -->
+            <div id="step-4" class="step-content">
+                <div class="mb-4">
+                    <h3 class="text-lg font-bold text-purple-600 mb-2">Aperçu du cours</h3>
+                    <div class="border border-purple-200 rounded-lg p-4">
+                        <h4 class="text-base font-semibold text-gray-800" id="preview-title">{{ form.title.value|default:"Titre du cours" }}</h4>
+                        <p class="text-sm text-gray-600 mt-2" id="preview-short-desc">{{ form.short_description.value|default:"Description courte" }}</p>
+                        <div class="mt-4">
+                            <img id="preview-image" src="{% if course and course.image %}{{ course.image.url }}{% else %}{% static 'images/course-placeholder.jpg' %}{% endif %}" alt="Course Image" class="w-full rounded-lg">
+                        </div>
+                        <p class="text-sm text-gray-600 mt-2" id="preview-desc">{{ form.description.value|default:"Description complète" }}</p>
+                        <p class="text-sm text-gray-600 mt-2" id="preview-category">Catégorie : {{ form.category.value|default:"Non sélectionnée" }}</p>
+                        <p class="text-sm text-gray-600 mt-2" id="preview-price">Prix : {{ form.price.value|default:"0" }} FCFA</p>
+                        <p class="text-sm text-gray-600 mt-2" id="preview-published">Statut : {{ form.is_published.value|yesno:"Publié,Non publié" }}</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Navigation Buttons -->
+            <div class="flex justify-between pt-6">
+                <button type="button" id="prev-step" class="bg-white text-purple-600 px-4 py-2 rounded-lg font-medium hover:bg-purple-50 transition flex items-center shadow border border-purple-200 hidden">
+                    <span class="material-symbols-outlined">arrow_back</span>
+                </button>
+
+                <div class="flex items-center space-x-4">
+                    <button type="button" id="next-step" class="bg-purple-600 text-white px-4 py-2 rounded-lg font-medium hover:bg-purple-700 transition flex items-center shadow">
+                        <span class="material-symbols-outlined">arrow_forward</span>
+                    </button>
+
+                    <button type="submit" id="submit-btn" class="bg-green-500 text-white px-6 py-2 rounded-lg font-medium hover:bg-green-600 transition hidden">
+                        {% if course %}Mettre à jour{% else %}Créer le cours{% endif %}
+                    </button>
+                </div>
+            </div>
+        </form>
     </div>
 </div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    let currentStep = 1;
+    const totalSteps = 4;
+    const form = document.getElementById('course-form');
+    const imageInput = document.getElementById('id_image');
+
+    // Initialize form
+    function initForm() {
+        updateUI();
+        setupEventListeners();
+    }
+
+    // Update UI based on current step
+    function updateUI() {
+        // Update progress bar
+        const progressPercentage = ((currentStep - 1) / (totalSteps - 1)) * 100;
+        document.getElementById('progress-bar').style.width = `${progressPercentage}%`;
+
+        // Update step circles
+        document.querySelectorAll('.step-circle').forEach((circle, index) => {
+            if (index + 1 <= currentStep) {
+                circle.classList.remove('bg-gray-200', 'text-gray-600');
+                circle.classList.add('bg-purple-600', 'text-white');
+                document.getElementById(`step-label-${index+1}`).classList.add('text-purple-600');
+                document.getElementById(`step-label-${index+1}`).classList.remove('text-gray-500');
+            } else {
+                circle.classList.add('bg-gray-200', 'text-gray-600');
+                circle.classList.remove('bg-purple-600', 'text-white');
+                document.getElementById(`step-label-${index+1}`).classList.remove('text-purple-600');
+                document.getElementById(`step-label-${index+1}`).classList.add('text-gray-500');
+            }
+        });
+
+        // Show/hide navigation buttons
+        document.getElementById('prev-step').classList.toggle('hidden', currentStep === 1);
+        document.getElementById('next-step').classList.toggle('hidden', currentStep === totalSteps);
+        document.getElementById('submit-btn').classList.toggle('hidden', currentStep !== totalSteps);
+
+        // Show current step content
+        document.querySelectorAll('.step-content').forEach(content => {
+            content.classList.remove('active');
+        });
+        document.getElementById(`step-${currentStep}`).classList.add('active');
+    }
+
+    // Validate current step
+    function validateCurrentStep() {
+        let isValid = true;
+        const currentStepEl = document.getElementById(`step-${currentStep}`);
+        const requiredInputs = currentStepEl.querySelectorAll('[required]');
+
+        // Clear previous errors
+        currentStepEl.querySelectorAll('.error-message').forEach(el => el.remove());
+        currentStepEl.querySelectorAll('.border-red-500').forEach(el => el.classList.remove('border-red-500'));
+
+        // Validate required fields
+        requiredInputs.forEach(input => {
+            if (!input.value) {
+                input.classList.add('border-red-500');
+                const error = document.createElement('p');
+                error.className = 'error-message';
+                error.textContent = 'Ce champ est requis';
+                input.parentNode.appendChild(error);
+                isValid = false;
+            }
+        });
+
+        return isValid;
+    }
+
+    // Update preview with form data
+    function updatePreview() {
+        document.getElementById('preview-title').textContent =
+            document.getElementById('id_title').value || 'Titre du cours';
+
+        document.getElementById('preview-short-desc').textContent =
+            document.getElementById('id_short_description').value || 'Description courte';
+
+        document.getElementById('preview-desc').textContent =
+            document.getElementById('id_description').value || 'Description complète';
+
+        document.getElementById('preview-category').textContent = 'Catégorie : ' +
+            (document.getElementById('id_category').value || 'Non sélectionnée');
+
+        document.getElementById('preview-price').textContent = 'Prix : ' +
+            (document.getElementById('id_price').value || '0') + ' FCFA';
+
+        document.getElementById('preview-published').textContent = 'Statut : ' +
+            (document.getElementById('id_is_published').checked ? 'Publié' : 'Non publié');
+    }
+
+    // Setup event listeners
+    function setupEventListeners() {
+        // Next step button
+        document.getElementById('next-step').addEventListener('click', function() {
+            if (validateCurrentStep()) {
+                currentStep++;
+                if (currentStep === totalSteps) {
+                    updatePreview();
+                }
+                updateUI();
+            }
+        });
+
+        // Previous step button
+        document.getElementById('prev-step').addEventListener('click', function() {
+            currentStep--;
+            updateUI();
+        });
+
+        // Image upload preview
+        if (imageInput) {
+            imageInput.addEventListener('change', function(e) {
+                if (e.target.files && e.target.files[0]) {
+                    const reader = new FileReader();
+                    reader.onload = function(event) {
+                        document.getElementById('preview-image').src = event.target.result;
+                    };
+                    reader.readAsDataURL(e.target.files[0]);
+                }
+            });
+        }
+
+        // Form submission
+        form.addEventListener('submit', function(e) {
+            // Validate all steps before submission
+            for (let step = 1; step <= totalSteps; step++) {
+                currentStep = step;
+                if (!validateCurrentStep()) {
+                    e.preventDefault();
+                    updateUI();
+                    return false;
+                }
+            }
+            return true;
+        });
+    }
+
+    // Initialize the form
+    initForm();
+});
+</script>
 {% endblock %}

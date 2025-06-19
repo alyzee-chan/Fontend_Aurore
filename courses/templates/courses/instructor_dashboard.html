@@ -4,51 +4,92 @@
 {% block title %}Instructor Dashboard{% endblock %}
 
 {% block content %}
-<h1 class="text-4xl font-bold text-center text-blue-800 mb-8">Instructor Dashboard</h1>
+<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    <div class="text-center mb-12">
+        <h1 class="text-4xl font-bold text-blue-800 mb-4">Instructor Dashboard</h1>
+        <p class="text-lg text-gray-600 max-w-2xl mx-auto">Manage and track all your courses in one place</p>
+    </div>
 
-<div class="text-center mb-8">
-    <a href="{% url 'course_create' %}" class="bg-green-600 text-white px-6 py-3 rounded-lg text-lg font-semibold hover:bg-green-700 transition duration-300">
-        Create New Course
-    </a>
-</div>
+    <div class="text-center mb-10">
+        <a href="{% url 'course_create' %}"
+           class="inline-flex items-center bg-gradient-to-r from-green-500 to-green-600 text-white px-8 py-3 rounded-full text-lg font-semibold hover:from-green-600 hover:to-green-700 transition-all duration-300 shadow-lg hover:shadow-xl">
+            <span class="material-symbols-outlined mr-2">add</span>
+            Create New Course
+        </a>
+    </div>
 
-<h2 class="text-3xl font-bold text-gray-900 mb-6">My Courses</h2>
-
-{% if courses %}
-    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+    {% if courses %}
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
         {% for course in courses %}
-            <div class="bg-white rounded-lg shadow-md overflow-hidden border {% if not course.is_published %}border-yellow-400{% else %}border-blue-200{% endif %}">
-                <div class="p-6">
-                    <h3 class="text-xl font-semibold text-gray-900 mb-2">{{ course.title }}</h3>
-                    <p class="text-sm text-gray-600 mb-3">{{ course.overview|truncatechars:100 }}</p>
-                    <p class="text-md text-gray-700">Subject: <span class="font-medium">{{ course.subject.name }}</span></p>
-                    <p class="text-md text-gray-700">Modules: <span class="font-medium">{{ course.num_modules }}</span></p>
-                    <p class="text-md text-gray-700">Price: <span class="font-medium">
-                        {% if course.price > 0 %}FCFA{{ course.price }}{% else %}Free{% endif %}
-                    </span></p>
-                    <p class="text-md font-medium {% if course.is_published %}text-green-600{% else %}text-yellow-600{% endif %}">
-                        Status: {% if course.is_published %}Published{% else %}Draft{% endif %}
-                    </p>
+        <div class="bg-white rounded-xl shadow-lg overflow-hidden transform transition-all duration-300 hover:-translate-y-2 hover:shadow-2xl border-2 {% if not course.is_published %}border-yellow-400{% else %}border-transparent{% endif %}">
+            <div class="p-6 relative">
+                {% if not course.is_published %}
+                <span class="absolute top-4 right-4 bg-yellow-100 text-yellow-800 text-xs font-medium px-2.5 py-0.5 rounded-full">Draft</span>
+                {% else %}
+                <span class="absolute top-4 right-4 bg-green-100 text-green-800 text-xs font-medium px-2.5 py-0.5 rounded-full">Published</span>
+                {% endif %}
 
-                    <div class="mt-4 flex flex-wrap gap-2">
-                        <a href="{% url 'course_detail' course.id course.slug %}"
-                           class="bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700 transition duration-300 text-sm">
-                           View/Manage
-                        </a>
-                        <a href="{% url 'course_edit' course.id %}"
-                           class="bg-green-500 text-white px-4 py-2 rounded-md hover:bg-green-600 transition duration-300 text-sm">
-                           Edit
-                        </a>
-                        <a href="{% url 'course_delete' course.id %}"
-                           class="bg-red-500 text-white px-4 py-2 rounded-md hover:bg-red-600 transition duration-300 text-sm">
-                           Delete
-                        </a>
+                <div class="flex items-center mb-4">
+                    <span class="material-symbols-outlined text-blue-500 mr-2">menu_book</span>
+                    <h3 class="text-xl font-bold text-gray-900">{{ course.title }}</h3>
+                </div>
+
+                <p class="text-gray-600 mb-5 text-sm">{{ course.overview|truncatechars:100 }}</p>
+
+                <div class="space-y-2 mb-6">
+                    <div class="flex items-center text-gray-700">
+                        <span class="material-symbols-outlined text-sm mr-2 text-blue-500">category</span>
+                        <span>Subject: <span class="font-medium">{{ course.subject.name }}</span></span>
+                    </div>
+                    <div class="flex items-center text-gray-700">
+                        <span class="material-symbols-outlined text-sm mr-2 text-blue-500">library_books</span>
+                        <span>Modules: <span class="font-medium">{{ course.num_modules }}</span></span>
+                    </div>
+                    <div class="flex items-center text-gray-700">
+                        <span class="material-symbols-outlined text-sm mr-2 text-blue-500">payments</span>
+                        <span>Price: <span class="font-medium">{% if course.price > 0 %}FCFA{{ course.price }}{% else %}Free{% endif %}</span></span>
                     </div>
                 </div>
+
+                <div class="flex flex-wrap gap-3 justify-center">
+                    <a href="{% url 'course_detail' course.id course.slug %}"
+                       class="flex items-center bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition duration-300 text-sm">
+                       <span class="material-symbols-outlined mr-1 text-sm">visibility</span>
+                       View
+                    </a>
+                    <a href="{% url 'course_edit' course.id %}"
+                       class="flex items-center bg-green-500 text-white px-4 py-2 rounded-lg hover:bg-green-600 transition duration-300 text-sm">
+                       <span class="material-symbols-outlined mr-1 text-sm">edit</span>
+                       Edit
+                    </a>
+                    <a href="{% url 'course_delete' course.id %}"
+                       class="flex items-center bg-red-500 text-white px-4 py-2 rounded-lg hover:bg-red-600 transition duration-300 text-sm">
+                       <span class="material-symbols-outlined mr-1 text-sm">delete</span>
+                       Delete
+                    </a>
+                </div>
             </div>
+        </div>
         {% endfor %}
     </div>
-{% else %}
-    <p class="text-center text-gray-600 text-lg mt-10">You haven't created any courses yet.</p>
-{% endif %}
+    {% else %}
+    <div class="relative text-center py-16 bg-gray-50 rounded-xl overflow-hidden">
+        <div class="absolute inset-0 z-0">
+            <img src="{% static 'book6.jpeg' %}"
+                 alt="Background"
+                 class="w-full h-full object-cover filter blur-sm opacity-30">
+        </div>
+
+        <div class="relative z-10">
+            <span class="material-symbols-outlined text-gray-400 text-6xl mb-4">auto_stories</span>
+            <h3 class="text-xl font-medium text-gray-900 mb-2">Pas encore de cours</h3>
+            <p class="text-gray-600 mb-6">Vous n'avez pas encore créé de cours. Commencez par créer votre premier cours !</p>
+            <a href="{% url 'course_create' %}"
+               class="inline-flex items-center bg-blue-600 text-white px-6 py-2 rounded-lg text-sm font-medium hover:bg-blue-700 transition duration-300">
+                Créez votre premier cours
+            </a>
+        </div>
+    </div>
+    {% endif %}
+</div>
 {% endblock %}

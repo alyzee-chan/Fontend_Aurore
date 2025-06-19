@@ -1,297 +1,741 @@
-<!DOCTYPE html>
-<html lang="fr">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>EHBLO Education</title>
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@200;300;400;500;600;700&display=swap" rel="stylesheet">
-    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
-    <style>
-        * { box-sizing: border-box; }
-        body {
-            font-family: 'Poppins', sans-serif;
-            margin: 0;
-            background: #f0f4f8;
-            color: #333;
-            min-height: 100vh;
-            overflow-x: hidden;
-        }
+{% extends "base.html" %}
+{% load static %}
 
-        .hero-background {
-            background-image: url('back.png');
-            background-size: cover;
-            background-position: center;
-            position: absolute;
-            top: 0;
-            right: 0;
-            width: 50%;
-            height: 100vh;
-            z-index: 0;
-        }
+{% block title %}EHBLO Education{% endblock %}
 
+{% block content %}
+<style>
+    .material-symbols-outlined {
+        font-family: 'Material Symbols Outlined';
+        font-weight: normal;
+        font-style: normal;
+        font-size: 24px;
+        line-height: 1;
+        letter-spacing: normal;
+        text-transform: none;
+        display: inline-block;
+        white-space: nowrap;
+        word-wrap: normal;
+        direction: ltr;
+        -webkit-font-feature-settings: 'liga';
+        -webkit-font-smoothing: antialiased;
+        vertical-align: middle;
+        margin-right: 8px;
+    }
+
+    .hero-background {
+        background-image: url('{% static "back.png" %}');
+        background-size: cover;
+        background-position: center;
+        position: absolute;
+        top: 0;
+        right: 0;
+        width: 50%;
+        height: 100vh;
+        z-index: 0;
+    }
+
+    .navbar {
+        position: fixed;
+        top: 0;
+        width: 100%;
+        background: rgba(75, 0, 130, 0.7);
+        padding: 15px;
+        box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        z-index: 1000;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+    .navbar h1 {
+        font-size: 1.2rem;
+        color: white;
+    }
+    .navbar a {
+        color: #fff;
+        text-decoration: none;
+        font-weight: 500;
+        font-size: 14px;
+        transition: all 0.3s ease;
+    }
+    .navbar a:hover {
+        color: #4B0082;
+    }
+
+    .hero {
+        padding: 100px 20px;
+        position: relative;
+        z-index: 10;
+        height: 100vh;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        background: linear-gradient(to right, #4B0082, #E6E6FA);
+    }
+    .hero-content {
+        margin: 100px 0 0 20px;
+        max-width: 100%;
+        text-align: left;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+    .tete {
+        width: 45%;
+    }
+    .hero h1 {
+        font-size: 48px;
+        margin-bottom: 20px;
+        color: #fff;
+    }
+    .hero p {
+        font-size: 18px;
+        margin-bottom: 30px;
+        color: #fff;
+    }
+    .btn-container {
+        display: flex;
+        flex-direction: row;
+        gap: 15px;
+        align-items: center;
+        flex-wrap: wrap;
+    }
+    .btn {
+        padding: 10px 18px;
+        border: none;
+        border-radius: 6px;
+        font-size: 16px;
+        color: white;
+        cursor: pointer;
+        text-decoration: none;
+        transition: all 0.3s ease;
+        display: inline-block;
+        font-weight: 500;
+        max-width: 250px;
+        text-align: center;
+        white-space: nowrap;
+    }
+    .btn-blue { background-color: #1E90FF; }
+    .btn-blue:hover { background-color: #104E8B; transform: translateY(-2px); }
+    .btn-purple { background-color: #8A2BE2; }
+    .btn-purple:hover { background-color: #4B0082; transform: translateY(-2px); }
+
+    .carousel-section {
+        padding: 60px 20px;
+        background: #E6E6FA;
+        text-align: center;
+        overflow: hidden;
+    }
+    .carousel {
+        position: relative;
+        overflow: hidden;
+        width: 100%;
+        max-width: 1200px;
+        margin: 0 auto;
+    }
+    .carousel-track {
+        display: flex;
+        width: fit-content;
+        animation: scrollCarousel 20s linear infinite;
+    }
+    @keyframes scrollCarousel {
+        0% { transform: translateX(0); }
+        100% { transform: translateX(-50%); }
+    }
+    .item {
+        flex: 0 0 auto;
+        width: 250px;
+        background: #fff;
+        border-radius: 10px;
+        box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+        text-align: center;
+        padding: 15px;
+        margin: 0 10px;
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+        position: relative;
+        z-index: 1;
+    }
+    .item:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 8px 16px rgba(0,0,0,0.2);
+        z-index: 2;
+    }
+    .item img {
+        width: 100%;
+        border-radius: 10px;
+        height: 180px;
+        object-fit: cover;
+    }
+    .item h3 {
+        margin: 10px 0 5px;
+        color: #6A0DAD;
+    }
+
+    .stats-section {
+        display: flex;
+        justify-content: space-around;
+        margin: 40px 0;
+        flex-wrap: wrap;
+        background: #fff;
+        padding: 20px;
+    }
+    .stat {
+        background: #D8BFD8;
+        border-radius: 10px;
+        padding: 20px;
+        margin: 10px;
+        width: 250px;
+        text-align: center;
+        font-size: 20px;
+        box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+    }
+
+    .services {
+        text-align: center;
+        padding: 40px 20px;
+        background: #E6E6FA;
+    }
+    .services h2 {
+        font-size: 28px;
+        margin-bottom: 20px;
+        color: #6A0DAD;
+    }
+    .slider-container {
+        position: relative;
+        overflow: hidden;
+        width: 100%;
+        max-width: 1200px;
+        margin: 0 auto;
+    }
+    .slider {
+        display: flex;
+        width: fit-content;
+        animation: scrollSlider 20s linear infinite;
+    }
+    @keyframes scrollSlider {
+        0% { transform: translateX(0); }
+        100% { transform: translateX(-50%); }
+    }
+    .slider-item {
+        flex: 0 0 auto;
+        width: 350px;
+        background: #fff;
+        border-radius: 10px;
+        box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+        padding: 15px;
+        margin: 0 15px;
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+        position: relative;
+        z-index: 1;
+    }
+    .slider-item:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 8px 16px rgba(0,0,0,0.2);
+        z-index: 2;
+    }
+    .review-header {
+        display: flex;
+        align-items: center;
+        margin-bottom: 15px;
+    }
+    .review-avatar {
+        width: 50px;
+        height: 50px;
+        border-radius: 50%;
+        object-fit: cover;
+        margin-right: 15px;
+    }
+    .review-name {
+        font-weight: 600;
+        color: #6A0DAD;
+        flex-grow: 1;
+        text-align: right;
+    }
+    .review-content {
+        color: #555;
+        font-size: 14px;
+        line-height: 1.5;
+        margin-bottom: 15px;
+        text-align: left;
+    }
+    .review-footer {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        font-size: 12px;
+        color: #777;
+    }
+    .review-subject {
+        background-color: #E6E6FA;
+        padding: 3px 8px;
+        border-radius: 12px;
+        font-size: 12px;
+    }
+    .review-date {
+        font-style: italic;
+    }
+    .nav-btn {
+        position: absolute;
+        top: 50%;
+        transform: translateY(-50%);
+        background-color: #4B0082;
+        color: white;
+        border: none;
+        border-radius: 50%;
+        width: 40px;
+        height: 40px;
+        font-size: 18px;
+        cursor: pointer;
+        z-index: 10;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        opacity: 0.7;
+        transition: opacity 0.3s;
+    }
+    .nav-btn:hover {
+        opacity: 1;
+    }
+    .prev {
+        left: 10px;
+    }
+    .next-2 {
+        right: 10px;
+    }
+
+    /* Mobile styles */
+    @media (max-width: 768px) {
         .navbar {
-            position: fixed;
-            top: 0;
+            flex-direction: column;
+            padding: 10px;
+        }
+        .navbar h1 {
+            margin-bottom: 10px;
+            font-size: 1rem;
+        }
+        .navbar ul {
             width: 100%;
-            background: rgba(75, 0, 130, 0.7);
-            padding: 15px;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-            z-index: 1000;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
+            justify-content: space-around;
         }
         .navbar a {
-            color: #fff;
-            text-decoration: none;
-            font-weight: 500;
-            font-size: 14px;
-            transition: all 0.3s ease;
-        }
-        .navbar a:hover {
-            color: #4B0082;
+            font-size: 12px;
         }
 
-        .hero {
-            padding: 100px 20px;
-            position: relative;
-            z-index: 10;
-            height: 100vh;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            background: linear-gradient(to right, #4B0082, #E6E6FA);
-        }
         .hero-content {
-            margin : 100px 0 0 20px;
-            max-width: 100%;
-            text-align: left;
-            display : flex;
-            justify-content: space-between;
+            flex-direction: column;
+            margin: 80px 0 0 0;
+            text-align: center;
         }
         .tete {
-            width: 45%;
+            width: 100%;
+            margin-bottom: 30px;
         }
         .hero h1 {
-            font-size: 48px;
-            margin-bottom: 20px;
-            color: #fff;
+            font-size: 28px;
+            margin-bottom: 15px;
         }
         .hero p {
-            font-size: 18px;
-            margin-bottom: 30px;
-            color: #fff;
+            font-size: 16px;
+            margin-bottom: 20px;
         }
         .btn-container {
-            display: flex;
-            flex-direction: row;
-            gap: 15px;
-            align-items: center;
+            justify-content: center;
         }
         .btn {
-            padding: 10px 18px;
-            border: none;
-            border-radius: 6px;
-            font-size: 16px;
-            color: white;
-            cursor: pointer;
-            text-decoration: none;
-            transition: all 0.3s ease;
-            display: inline-block;
-            font-weight: 500;
-            max-width: 250px;
-            text-align: center;
-            white-space: nowrap;
+            padding: 8px 15px;
+            font-size: 14px;
         }
-        .btn-blue { background-color: #1E90FF; }
-        .btn-blue:hover { background-color: #104E8B; transform: translateY(-2px); }
-        .btn-purple { background-color: #8A2BE2; }
-        .btn-purple:hover { background-color: #4B0082; transform: translateY(-2px); }
+        .hero-background {
+            width: 100%;
+            opacity: 0.3;
+        }
 
-        .carousel-section {
-            padding: 60px 20px;
-            background: #E6E6FA;
-            text-align: center;
-            overflow: hidden;
-        }
-        .carousel {
-            position: relative;
-            overflow: hidden;
-        }
-        .carousel-track {
-            display: flex;
-            width: fit-content;
-            animation: scrollCarousel 20s linear infinite;
-        }
-        @keyframes scrollCarousel {
-            0% { transform: translateX(0); }
-            100% { transform: translateX(-50%); }
+        .carousel-section h2 {
+            font-size: 18px;
         }
         .item {
-            flex: 0 0 auto;
-            width: 250px;
-            background: #fff;
-            border-radius: 10px;
-            box-shadow: 0 2px 6px rgba(0,0,0,0.1);
-            text-align: center;
-            padding: 15px;
-            margin: 0 10px;
-            transition: transform 0.3s ease, box-shadow 0.3s ease;
-            position: relative;
-            z-index: 1;
-        }
-        .item:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 8px 16px rgba(0,0,0,0.2);
-            z-index: 2;
+            width: 200px;
         }
         .item img {
+            height: 140px;
+        }
+
+        .stat {
             width: 100%;
-            border-radius: 10px;
-            height: 180px;
-            object-fit: cover;
+            margin: 5px 0;
+            font-size: 18px;
+        }
+
+        .services h2 {
+            font-size: 22px;
+        }
+        .slider-item {
+            width: 280px;
+            margin: 0 10px;
+        }
+        .review-avatar {
+            width: 40px;
+            height: 40px;
+        }
+        .review-name {
+            font-size: 14px;
+        }
+        .review-content {
+            font-size: 13px;
+        }
+
+        .nav-btn {
+            width: 30px;
+            height: 30px;
+            font-size: 14px;
+        }
+    }
+
+    @media (max-width: 480px) {
+        .hero {
+            padding: 80px 15px;
+        }
+        .hero h1 {
+            font-size: 24px;
+        }
+        .hero p {
+            font-size: 14px;
+        }
+
+        .item {
+            width: 160px;
+            padding: 10px;
+        }
+        .item img {
+            height: 120px;
         }
         .item h3 {
-            margin: 10px 0 5px;
-            color: #6A0DAD;
+            font-size: 16px;
         }
 
-        .stats-section {
-            display: flex;
-            justify-content: space-around;
-            margin: 40px 0;
-            flex-wrap: wrap;
-            background: #fff;
-            padding: 20px;
+        .slider-item {
+            width: 240px;
+            padding: 10px;
         }
-        .stat {
-            background: #D8BFD8;
-            border-radius: 10px;
-            padding: 20px;
-            margin: 10px;
-            width: 250px;
-            text-align: center;
-            font-size: 20px;
-            box-shadow: 0 2px 6px rgba(0,0,0,0.1);
-        }
-
-        .services {
-            text-align: center;
-            padding: 40px 20px;
-            background: #E6E6FA;
-        }
-        .services h2 {
-            font-size: 28px;
-            margin-bottom: 20px;
-            color: #6A0DAD;
-        }
-        .service-grid {
-            display: flex;
-            flex-wrap: wrap;
-            justify-content: center;
-            gap: 20px;
-        }
-        .service-card {
-            background: #fff;
-            border-radius: 10px;
-            width: 200px;
-            text-align: center;
-            padding: 15px;
-            box-shadow: 0 2px 6px rgba(0,0,0,0.1);
-            text-decoration: none;
-            color: inherit;
-            transition: transform 0.3s ease, box-shadow 0.3s ease;
-        }
-        .service-card:hover {
-            transform: translateY(-5px) scale(1.03);
-            box-shadow: 0 8px 16px rgba(0,0,0,0.15);
-        }
-        .service-card img {
-            width: 80px;
-            height: 80px;
-            object-fit: cover;
-            border-radius: 50%;
+        .review-header {
             margin-bottom: 10px;
         }
-
-        footer {
-            text-align: center;
-            padding: 15px;
-            background: #4B0082;
-            color: #fff;
-            margin-top: 30px;
+        .review-avatar {
+            width: 35px;
+            height: 35px;
+            margin-right: 10px;
         }
-        .slider{
+    }
 
-        }
-    </style>
-</head>
-<body>
-    <div class="hero-background"></div>
-    <header class="navbar">
-        <h1>EHBLO Education</h1>
-        <ul class="flex space-x-6">
-            <li><a href="#services" class="attractive-button">Services</a></li>
-            <li><a href="#contact" class="attractive-button">Contact</a></li>
-            <li><a href="#subscribe" class="attractive-button">Subscribe</a></li>
-        </ul>
-    </header>
+    footer {
+        text-align: center;
+        padding: 15px;
+        background: #4B0082;
+        color: #fff;
+        margin-top: 30px;
+    }
+</style>
 
-    <section class="hero">
-        <div class="hero-content">
-            <div class = "tete">
-                <h1>Plongez dans l'Apprentissage</h1>
-                <p>Découvrez une vaste gamme de livres, des professeurs experts et une IA contextuelle innovante.</p>
-                <div class="btn-container">
-                    <a href="#courses" class="btn btn-blue">Explorer les Cours</a>
-                    <a href="#subscribe" class="btn btn-purple">S'inscrire</a>
+<div class="hero-background"></div>
+
+<section class="hero">
+    <div class="hero-content">
+        <div class="tete">
+            <h1>Plongez dans l'Apprentissage</h1>
+            <p>Découvrez une vaste gamme de livres, des professeurs experts et une IA contextuelle innovante.</p>
+            <div class="btn-container">
+                <a href="#courses" class="btn btn-blue">Explorer les Cours</a>
+                <a href="#subscribe" class="btn btn-purple">S'inscrire</a>
+            </div>
+        </div>
+        <img src="{% static 'back.png' %}" alt="Illustration éducation" class="hero-image">
+    </div>
+</section>
+
+<section class="carousel-section" id="courses">
+    <h2 style="font-weight: bold; font-size: 20px;">Nos Livres Populaires</h2>
+    <div class="carousel">
+        <div class="carousel-track" style="padding:20px 0">
+            <div class="item">
+                <img src="{% static 'book1.jpeg' %}" alt="Livre 1">
+                <h3>Manuel de Physique-Chimie</h3>
+                <p>Couvre les principes fondamentaux de la physique et de la chimie pour lycéens, avec exercices pratiques.</p>
+            </div>
+            <div class="item">
+                <img src="{% static 'book3.jpeg' %}" alt="Livre 3">
+                <h3>Histoire du Monde Contemporain</h3>
+                <p>Panorama des événements historiques majeurs du 20ème siècle à nos jours, avec analyses critiques.</p>
+            </div>
+            <div class="item">
+                <img src="{% static 'book2.jpeg' %}" alt="Livre 2">
+                <h3>Biologie Cellulaire Avancée</h3>
+                <p>Approfondissement des mécanismes cellulaires et moléculaires, idéal pour étudiants en médecine.</p>
+            </div>
+            <div class="item">
+                <img src="{% static 'book4.jpeg' %}" alt="Livre 1">
+                <h3>Géologie Appliquée</h3>
+                <p>Étude des structures terrestres et des processus géologiques, avec études de cas régionaux.</p>
+            </div>
+            <div class="item">
+                <img src="{% static 'book5.jpeg' %}" alt="Livre 3">
+                <h3>Histoire des Civilisations Antiques</h3>
+                <p>Exploration détaillée des civilisations égyptienne, mésopotamienne et gréco-romaine.</p>
+            </div>
+            <div class="item">
+                <img src="{% static 'book6.jpeg' %}" alt="Livre 2">
+                <h3>Programmation Python</h3>
+                <p>Guide complet pour maîtriser Python, des bases aux concepts avancés comme le machine learning.</p>
+            </div>
+            <div class="item">
+                <img src="{% static 'book7.jpeg' %}" alt="Livre 3">
+                <h3>Histoire de l'Art Moderne</h3>
+                <p>Parcours à travers les mouvements artistiques majeurs de la période moderne et leurs influences.</p>
+            </div>
+            <div class="item">
+                <img src="{% static 'book2.jpeg' %}" alt="Livre 2">
+                <h3>Développement Web Fullstack</h3>
+                <p>Méthodologie complète pour créer des applications web modernes avec les dernières technologies.</p>
+            </div>
+            <div class="item">
+                <img src="{% static 'book3.jpeg' %}" alt="Livre 3">
+                <h3>Histoire Économique Globale</h3>
+                <p>Analyse des systèmes économiques à travers les âges et leur impact sur le développement des sociétés.</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section class="services" id="services">
+    <h2 class="text-2xl md:text-3xl font-bold text-purple-800 mb-3">Témoignages de nos utilisateurs</h2>
+    <div class="slider-container">
+        <div class="slider">
+            <!-- Avis 1 -->
+            <div class="slider-item">
+                <div class="review-header">
+                    <img src="{% static 'book1.jpeg' %}" alt="Jean Amougou" class="review-avatar">
+                    <span class="review-name">Jean Amougou</span>
+                </div>
+                <div class="review-content">
+                    "L'application EHBLO Education a révolutionné ma façon d'apprendre. Les livres proposés sont de grande qualité et les professeurs sont vraiment compétents. Je recommande vivement !"
+                </div>
+                <div class="review-footer">
+                    <span class="review-subject">Mathématiques</span>
+                    <span class="review-date">15/03/2023</span>
                 </div>
             </div>
-            <img src="./back.png" alt="" srcset="">
 
-        </div>
-    </section>
+            <!-- Avis 2 -->
+            <div class="slider-item">
+                <div class="review-header">
+                    <img src="{% static 'prof.jpeg' %}" alt="Julie Roosevelt" class="review-avatar">
+                    <span class="review-name">Julie Roosevelt</span>
+                </div>
+                <div class="review-content">
+                    "En tant que professeure de physique, j'apprécie particulièrement la qualité des ressources pédagogiques disponibles. L'interface est intuitive et mes élèves progressent rapidement."
+                </div>
+                <div class="review-footer">
+                    <span class="review-subject">Physique</span>
+                    <span class="review-date">22/04/2023</span>
+                </div>
+            </div>
 
-    <section class="carousel-section" id="courses">
-        <h2 style="font-weight: bold; font-size: 20px;">Nos Livres Populaires</h2>
-        <div class="carousel">
-            <div class="carousel-track" style="padding:20px 0">
-                <div class="item"><img src="./book1.jpeg" alt="Livre 1"><h3>Livre de Sciences</h3><p>2000 FCFA</p></div>
-                <div class="item"><img src="./book3.jpeg" alt="Livre 3"><h3>Livre d'Histoire</h3><p>1600 FCFA</p></div>
-                <div class="item"><img src="book2.jpeg" alt="Livre 2"><h3>Livre de Sciences</h3><p>2000 FCFA</p></div>
-                <div class="item"><img src="book1.jpeg" alt="Livre 1"><h3>Livre de Sciences</h3><p>2000 FCFA</p></div>
-                <div class="item"><img src="book3.jpeg" alt="Livre 3"><h3>Livre d'Histoire</h3><p>1600 FCFA</p></div>
-                <div class="item"><img src="book2.jpeg" alt="Livre 2"><h3>Livre de Sciences</h3><p>2000 FCFA</p></div>
-                <div class="item"><img src="book3.jpeg" alt="Livre 3"><h3>Livre d'Histoire</h3><p>1600 FCFA</p></div>
-                <div class="item"><img src="book2.jpeg" alt="Livre 2"><h3>Livre de Sciences</h3><p>2000 FCFA</p></div>
-                <div class="item"><img src="book3.jpeg" alt="Livre 3"><h3>Livre d'Histoire</h3><p>1600 FCFA</p></div>
+            <!-- Avis 3 -->
+            <div class="slider-item">
+                <div class="review-header">
+                    <img src="{% static 'fonf.jpeg' %}" alt="Mbarga Martin" class="review-avatar">
+                    <span class="review-name">Mbarga Martin</span>
+                </div>
+                <div class="review-content">
+                    "Le chat IA est incroyablement utile pour répondre à mes questions en temps réel. J'ai pu améliorer mes notes en histoire grâce aux explications claires et détaillées."
+                </div>
+                <div class="review-footer">
+                    <span class="review-subject">Histoire</span>
+                    <span class="review-date">05/05/2023</span>
+                </div>
+            </div>
+
+            <!-- Avis 4 -->
+            <div class="slider-item">
+                <div class="review-header">
+                    <img src="{% static 'book8.jpeg' %}" alt="Uriel Onguene" class="review-avatar">
+                    <span class="review-name">Uriel Onguene</span>
+                </div>
+                <div class="review-content">
+                    "Les cours sont bien structurés et adaptés à différents niveaux. J'ai particulièrement apprécié les exercices interactifs qui rendent l'apprentissage plus engageant."
+                </div>
+                <div class="review-footer">
+                    <span class="review-subject">Programmation</span>
+                    <span class="review-date">18/06/2023</span>
+                </div>
+            </div>
+
+            <!-- Duplication pour l'effet de défilement infini -->
+            <!-- Avis 1 -->
+            <div class="slider-item">
+                <div class="review-header">
+                    <img src="{% static 'book1.jpeg' %}" alt="Jean Amougou" class="review-avatar">
+                    <span class="review-name">Jean Amougou</span>
+                </div>
+                <div class="review-content">
+                    "L'application EHBLO Education a révolutionné ma façon d'apprendre. Les livres proposés sont de grande qualité et les professeurs sont vraiment compétents. Je recommande vivement !"
+                </div>
+                <div class="review-footer">
+                    <span class="review-subject">Mathématiques</span>
+                    <span class="review-date">15/03/2023</span>
+                </div>
+            </div>
+
+            <!-- Avis 2 -->
+            <div class="slider-item">
+                <div class="review-header">
+                    <img src="{% static 'prof.jpeg' %}" alt="Julie Roosevelt" class="review-avatar">
+                    <span class="review-name">Julie Roosevelt</span>
+                </div>
+                <div class="review-content">
+                    "En tant que professeure de physique, j'apprécie particulièrement la qualité des ressources pédagogiques disponibles. L'interface est intuitive et mes élèves progressent rapidement."
+                </div>
+                <div class="review-footer">
+                    <span class="review-subject">Physique</span>
+                    <span class="review-date">22/04/2023</span>
+                </div>
+            </div>
+
+            <!-- Avis 3 -->
+            <div class="slider-item">
+                <div class="review-header">
+                    <img src="{% static 'fonf.jpeg' %}" alt="Mbarga Martin" class="review-avatar">
+                    <span class="review-name">Mbarga Martin</span>
+                </div>
+                <div class="review-content">
+                    "Le chat IA est incroyablement utile pour répondre à mes questions en temps réel. J'ai pu améliorer mes notes en histoire grâce aux explications claires et détaillées."
+                </div>
+                <div class="review-footer">
+                    <span class="review-subject">Histoire</span>
+                    <span class="review-date">05/05/2023</span>
+                </div>
+            </div>
+
+            <!-- Avis 4 -->
+            <div class="slider-item">
+                <div class="review-header">
+                    <img src="{% static 'book8.jpeg' %}" alt="Uriel Onguene" class="review-avatar">
+                    <span class="review-name">Uriel Onguene</span>
+                </div>
+                <div class="review-content">
+                    "Les cours sont bien structurés et adaptés à différents niveaux. J'ai particulièrement apprécié les exercices interactifs qui rendent l'apprentissage plus engageant."
+                </div>
+                <div class="review-footer">
+                    <span class="review-subject">Programmation</span>
+                    <span class="review-date">18/06/2023</span>
+                </div>
             </div>
         </div>
-    </section>
+        <button class="nav-btn prev">❮</button>
+        <button class="nav-btn next-2">❯</button>
+    </div>
+</section>
 
-    <section class="stats-section">
-        <div class="stat">📚 Livres : <strong>100</strong></div>
-        <div class="stat">👩‍🏫 Professeurs : <strong>15</strong></div>
-        <div class="stat">🖥️ Sessions IA : <strong>50</strong></div>
-    </section>
+<script>
+    // Slider functionality
+    const slider = document.querySelector('.slider');
+    const prevBtn = document.querySelector('.prev');
+    const nextBtn = document.querySelector('.next-2');
+    const sliderItems = document.querySelectorAll('.slider-item');
+    let currentIndex = 0;
+    let isPaused = false;
+    const itemWidth = 350; // Largeur d'un élément slider-item + margin
+    const visibleItems = 3; // Nombre d'éléments visibles à la fois
 
-    <section class="services" id="services">
-        <h2>Certains Avis</h2>
-        <div class="item">
-            <a href="#books" class="slider"><img src="book1.jpeg" alt="Livres"><span>Jean Amougou</span></a>
-        </div>
-        <div class="item">
-            <a href="#professors" class="slider"><img src="prof.jpeg" alt="Professeurs"><span>Julie Roosevelt</span></a>
-        </div>
-        <div class="item">
-            <a href="#chat" class="slider"><img src="ia.jpg" alt="Chat IA"><span>Mbarga Martin</span></a>
-        </div>
-        <div class="item">
-            <a href="#courses" class="slider"><img src="fonf.jpeg" alt="Cours"><span>Uriel Onguene</span></a>
-        </div>
-    </section>
-    <footer id="contact">
-        © 2025 EHBLO Education. Tous droits réservés.
-    </footer>
-</body>
-</html>
+    // Fonction pour déplacer le slider
+    function moveSlider(direction) {
+        // Calculer le nombre total d'éléments uniques (en ignorant les duplications)
+        const totalUniqueItems = sliderItems.length / 2;
+
+        if (direction === 'next') {
+            currentIndex = (currentIndex + 1) % totalUniqueItems;
+        } else {
+            currentIndex = (currentIndex - 1 + totalUniqueItems) % totalUniqueItems;
+        }
+
+        // Calculer la position de décalage
+        const offset = -currentIndex * itemWidth;
+
+        // Appliquer la transformation avec une animation fluide
+        slider.style.transition = 'transform 0.5s ease-in-out';
+        slider.style.transform = `translateX(${offset}px)`;
+
+        // Réinitialiser l'animation automatique
+        resetAutoAnimation();
+    }
+
+    // Réinitialiser l'animation automatique après une navigation manuelle
+    function resetAutoAnimation() {
+        // Arrêter l'animation CSS
+        slider.style.animation = 'none';
+
+        // Redémarrer après un court délai
+        setTimeout(() => {
+            slider.style.animation = 'scrollSlider 20s linear infinite';
+            isPaused = false;
+        }, 500);
+    }
+
+    // Gestion des événements
+    prevBtn.addEventListener('click', () => {
+        moveSlider('prev');
+        isPaused = true;
+    });
+
+    nextBtn.addEventListener('click', () => {
+        moveSlider('next');
+        isPaused = true;
+    });
+
+    // Pause au survol
+    slider.addEventListener('mouseenter', () => {
+        slider.style.animationPlayState = 'paused';
+        isPaused = true;
+    });
+
+    slider.addEventListener('mouseleave', () => {
+        if (!isPaused) {
+            slider.style.animationPlayState = 'running';
+        }
+    });
+
+    // Réinitialiser l'animation quand on clique ailleurs
+    document.addEventListener('click', (e) => {
+        if (!slider.contains(e.target) && !prevBtn.contains(e.target) && !nextBtn.contains(e.target)) {
+            slider.style.animationPlayState = 'running';
+            isPaused = false;
+        }
+    });
+
+    // Au chargement de la page, positionner correctement le slider
+    window.addEventListener('load', () => {
+        slider.style.transform = 'translateX(0)';
+    });
+
+    // Adaptation pour mobile - ajuster la largeur des éléments en fonction de l'écran
+    function adjustSliderItems() {
+        const screenWidth = window.innerWidth;
+        const sliderItems = document.querySelectorAll('.slider-item');
+        let newWidth = 350; // Valeur par défaut
+
+        if (screenWidth <= 768) {
+            newWidth = 280;
+        }
+        if (screenWidth <= 480) {
+            newWidth = 240;
+        }
+
+        sliderItems.forEach(item => {
+            item.style.width = `${newWidth}px`;
+        });
+    }
+
+    // Exécuter au chargement et lors du redimensionnement
+    window.addEventListener('load', adjustSliderItems);
+    window.addEventListener('resize', adjustSliderItems);
+</script>
+{% endblock %}
