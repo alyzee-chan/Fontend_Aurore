@@ -444,8 +444,8 @@
             <h1>Plongez dans l'Apprentissage</h1>
             <p>Découvrez une vaste gamme de livres, des professeurs experts et une IA contextuelle innovante.</p>
             <div class="btn-container">
-                <a href="#courses" class="btn btn-blue">Explorer les Cours</a>
-                <a href="#subscribe" class="btn btn-purple">S'inscrire</a>
+                <a href="{% url 'course_list' %}" class="btn btn-blue">Explorer les Cours</a>
+                <a  href="{% url 'signup' %}" class="btn btn-purple">S'inscrire</a>
             </div>
         </div>
         <img src="{% static 'back.png' %}" alt="Illustration éducation" class="hero-image">
